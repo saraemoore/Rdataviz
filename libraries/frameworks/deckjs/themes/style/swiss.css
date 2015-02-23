@@ -1,0 +1,170 @@
+.deck-container {
+  font-family: "Open Sans", sans-serif;
+  font-size: 1.6em;
+  background: #fff;
+}
+.deck-container .slide {
+  background: #fff;
+}
+.deck-container .slide h1 {
+  color: #000;
+}
+.deck-container .slide h2 {
+  color: #c00;
+  border-bottom-color: #ccc;
+}
+.deck-container .slide h3 {
+  color: #888;
+}
+.deck-container .slide pre {
+  border-color: #ccc;
+}
+.deck-container .slide code {
+  color: #888;
+}
+.deck-container .slide blockquote {
+  font-size: 2em;
+  font-style: italic;
+  padding: 1em 2em;
+  color: #000;
+  border-left: 5px solid #ccc;
+}
+.deck-container .slide blockquote p {
+  margin: 0;
+}
+.deck-container .slide blockquote cite {
+  font-size: .5em;
+  font-style: normal;
+  font-weight: bold;
+  color: #888;
+}
+.deck-container .slide ::-moz-selection {
+  background: #c00;
+  color: #fff;
+}
+.deck-container .slide ::selection {
+  background: #c00;
+  color: #fff;
+}
+.deck-container .slide a, .deck-container .slide a:hover, .deck-container .slide a:focus, .deck-container .slide a:active, .deck-container .slide a:visited {
+  color: #c00;
+  text-decoration: none;
+}
+.deck-container .slide a:hover, .deck-container .slide a:focus {
+  text-decoration: underline;
+}
+.deck-container > .slide .deck-before, .deck-container > .slide .deck-previous {
+  opacity: 0.4;
+}
+.deck-container > .slide .deck-before:not(.deck-child-current) .deck-before, .deck-container > .slide .deck-before:not(.deck-child-current) .deck-previous, .deck-container > .slide .deck-previous:not(.deck-child-current) .deck-before, .deck-container > .slide .deck-previous:not(.deck-child-current) .deck-previous {
+  opacity: 1;
+}
+.deck-container > .slide .deck-child-current {
+  opacity: 1;
+}
+.deck-container .deck-prev-link, .deck-container .deck-next-link {
+  background: #ccc;
+  font-family: serif;
+}
+.deck-container .deck-prev-link, .deck-container .deck-prev-link:hover, .deck-container .deck-prev-link:focus, .deck-container .deck-prev-link:active, .deck-container .deck-prev-link:visited, .deck-container .deck-next-link, .deck-container .deck-next-link:hover, .deck-container .deck-next-link:focus, .deck-container .deck-next-link:active, .deck-container .deck-next-link:visited {
+  color: #fff;
+}
+.deck-container .deck-prev-link:hover, .deck-container .deck-prev-link:focus, .deck-container .deck-next-link:hover, .deck-container .deck-next-link:focus {
+  background: #c00;
+  text-decoration: none;
+}
+.deck-container .deck-status {
+  font-size: 0.6666em;
+}
+.deck-container.deck-menu .slide {
+  background: #eee;
+}
+.deck-container.deck-menu .deck-current, .no-touch .deck-container.deck-menu .slide:hover {
+  background: #ddf;
+}
+
+#firstslidetitle {
+  font-size: 4.0em;
+  top: 35%;
+  position: absolute;
+}
+
+#firstslidesubtitle {
+  bottom: 25%;
+  font-size: 1.75em;
+  font-weight: bold;
+  text-align: left;
+  position: absolute;
+  color: #c00;
+}
+
+#firstslideauthor {
+  font-size: 1.2em;
+  font-weight: bold;
+  bottom: 7.5%;
+  position: absolute;
+}
+
+aside.gdbar {
+  height: 97px;
+  width: 215px;
+  position: absolute;
+  right: 20px;
+  bottom: 6%;
+  -webkit-border-radius: 0 10px 10px 0;
+  -moz-border-radius: 0 10px 10px 0;
+  -ms-border-radius: 0 10px 10px 0;
+  -o-border-radius: 0 10px 10px 0;
+  border-radius: 0 10px 10px 0;
+  background: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #e6e6e6), color-stop(100%, #e6e6e6)) no-repeat;
+  background: -webkit-linear-gradient(left, #e6e6e6, #e6e6e6) no-repeat;
+  background: -moz-linear-gradient(left, #e6e6e6, #e6e6e6) no-repeat;
+  background: -o-linear-gradient(left, #e6e6e6, #e6e6e6) no-repeat;
+  background: -ms-linear-gradient(left, #e6e6e6, #e6e6e6) no-repeat;
+  background: linear-gradient(left, #e6e6e6, #e6e6e6) no-repeat;
+  -webkit-background-size: 0% 100%;
+  -moz-background-size: 0% 100%;
+  -o-background-size: 0% 100%;
+  background-size: 0% 100%;
+  -webkit-transition: all 0.5s ease-out 0.5s;
+  -moz-transition: all 0.5s ease-out 0.5s;
+  -ms-transition: all 0.5s ease-out 0.5s;
+  -o-transition: all 0.5s ease-out 0.5s;
+  transition: all 0.5s ease-out 0.5s;
+  /* Better to transition only on background-size, but not sure how to do that with the mixin. */
+}
+
+aside.gdbar.right {
+  right: 0;
+  left: -moz-initial;
+  left: initial;
+  top: 254px;
+  /* 96 is height of gray icon bar */
+  -webkit-transform: rotateZ(180deg);
+  -moz-transform: rotateZ(180deg);
+  -ms-transform: rotateZ(180deg);
+  -o-transform: rotateZ(180deg);
+  transform: rotateZ(180deg);
+}
+
+aside.gdbar.right img {
+  -webkit-transform: rotateZ(180deg);
+  -moz-transform: rotateZ(180deg);
+  -ms-transform: rotateZ(180deg);
+  -o-transform: rotateZ(180deg);
+  transform: rotateZ(180deg);
+}
+
+aside.gdbar.bottom {
+  top: -moz-initial;
+  top: initial;
+  bottom: 60px;
+}
+
+aside.gdbar img {
+  width: 150px;
+  height: 46px;
+  position: absolute;
+  right: 0;
+  margin: 8px 15px;
+}

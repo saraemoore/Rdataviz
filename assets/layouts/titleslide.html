@@ -1,0 +1,20 @@
+---
+layout: slide
+---
+{{# page.logo }}
+<aside class="gdbar">
+  <img src="{{page.url.assets}}/img/{{{ page.logo }}}">
+</aside>
+{{/ page.logo }}
+<div>
+  <h1 id="firstslidetitle">{{ page.title }}</h1>
+  <h3 id="firstslidesubtitle">{{ page.subtitle }}</h3>
+  <p id="firstslideauthor">{{ page.author }}<br/>{{ page.job }}</p>
+</div>
+{{# page.github }}
+  <a href="https://github.com/{{user}}/{{repo}}/zipball/gh-pages" class="example">
+   Download
+  </a>
+{{/ page.github }}
+<article></article>
+{{{ slide.content }}}
