@@ -49,7 +49,7 @@ You have:
 
 * If you're here, you're probably already using ggplot or are interested in learning to use it. But, I'm still going to tell you why it's a good thing to use.
 * Of course, it's pretty. Graphics made with ggplot are eye-catching.  This is actually pretty important -- it goes a long way when you want anyone who is not a statistician to look at your graphs.
-* The code you use to call ggplot and create a graphic is fairly intuitive.  This is because of the "grammar of graphics" that it adheres to, and we'll get back to that in a bit.
+* The code you use to call ggplot and create a graphic is fairly intuitive.  This is because of the "grammar of graphics" that it adheres to, and we'll get back to that in a bit. This is what the "gg" in "ggplot" stands for -- "grammar of graphics" -- so the philosophy is pretty central to the package.
 * If you learn how to use it well, you can make almost any visualization in it, and your reports, presentations, papers, and so on will look more cohesive because you stuck to a particular style throughout.
 * Finally, with a little help from other R packages, ggplot is able to interface with geographical maps.
 
@@ -73,7 +73,7 @@ You have:
 
 ---  &twocol
 
-## Tidy data ^`r Citep(bib, "Wickham_2014", .opts = list(cite.style = "numeric"))` (`reshape2` $\rightarrow$ `tidyr`)
+## Tidy data ^`r Citep(bib, "Wickham_2014", .opts = list(cite.style = "numeric"))`
 
 1. Each variable forms a column.
 2. Each observation forms a row.
@@ -155,16 +155,13 @@ ggplot() +
 
 ---
 
-## Aside: the philosophy of Edward Tufte
-
----
-
 ## The data
 
 * [Kaggle March Machine Learning "Mania" 2015](http://www.kaggle.com/c/march-machine-learning-mania-2015)
 
 ```{r loaddata, message=FALSE, cache=FALSE}
-source(paste("assets","load_clean_marchmania2015.R", sep=.Platform[["file.sep"]]))
+source(paste("assets","load_clean_marchmania2015.R", 
+	sep=.Platform[["file.sep"]]))
 # change this path to the location of your CSVs downloaded from kaggle
 # note that required packages will be installed automatically
 ncaa.basketball = load.clean.ncaa("~/Dropbox/kaggle/marchmania2015")
@@ -183,7 +180,7 @@ The dataset I'll be using throughout the presentation is from a Kaggle competiti
 ---
 
 ## Starting easy: a scatterplot
-```{r simple-scatterplot1, fig.cap=" ", message=FALSE, eval=FALSE}
+```{r simple-scatterplot0, fig.cap=" ", message=FALSE, eval=FALSE}
 library(ggplot2)
 ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
 	geom_point() + 
@@ -194,7 +191,7 @@ ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) +
 
 ---
 
-```{r simple-scatterplot2, fig.cap=" ", fig.height=9, fig.width=11.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+```{r simple-scatterplot1, fig.cap=" ", fig.height=9, fig.width=11.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
 library(ggplot2)
 ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
 	geom_point() + 
@@ -212,13 +209,13 @@ ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) +
 ---
 
 ## Improving the scatterplot
-```{r statbinhex1, fig.cap=" ", eval=FALSE}
+```{r statbinhex0, fig.cap=" ", eval=FALSE}
 ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
 	# default is bins=c(30,30) 
 	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	stat_binhex(binwidth=c(4, 4)) + 
-	scale_fill_gradient("Number of games") +
+	scale_fill_gradient("Number of games", trans="log") +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
 	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
@@ -226,12 +223,13 @@ ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) +
 
 ---
 
-```{r statbinhex2, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+```{r statbinhex1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
 ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
-	# default is bins=c(30,30) or just 30 since no. of bins for x and y are same.
+	# default is bins=c(30,30) 
+	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	stat_binhex(binwidth=c(4, 4)) + 
-	scale_fill_gradient("Number of games") +
+	scale_fill_gradient("Number of games", trans="log") +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
 	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
@@ -244,12 +242,13 @@ Here we are explicitly calling a ggplot transformation that asks ggplot to hexag
 ---
 
 ## Improving the scatterplot
-```{r geomhex1, fig.cap=" ", message=FALSE, eval=FALSE}
+```{r geomhex0, fig.cap=" ", message=FALSE, eval=FALSE}
 ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
-	# default is bins=c(30,30) or just 30 since no. of bins for x and y are same.
+	# default is bins=c(30,30) 
+	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	geom_hex(stat = "binhex", binwidth=c(4,4)) + 
-	scale_fill_gradient("Number of games") +
+	scale_fill_gradient("Number of games", trans="log") +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
 	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
@@ -257,13 +256,13 @@ ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) +
 
 ---
 
-
-```{r geomhex2, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+```{r geomhex1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
 ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
-	# default is bins=c(30,30) or just 30 since no. of bins for x and y are same.
+	# default is bins=c(30,30) 
+	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	geom_hex(stat = "binhex", binwidth=c(4,4)) + 
-	scale_fill_gradient("Number of games") +
+	scale_fill_gradient("Number of games", trans="log") +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
 	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
@@ -291,7 +290,7 @@ geom               | stat               | modifiable defaults
 `geom_violin()`    | `stat_ydensity()`  | Gaussian kernel; bandwidth set by Silverman's "rule of thumb" (calls `stats::density()`); all violins have same area before trimming tails, tails are trimmed to [range of y]
 `geom_smooth()`    | `stat_smooth()`    | if n<1000, `stats::loess()` with polynomial degree 2, $\alpha=0.75$, etc.; else, `gam::gam()` with penalized cubic regression splines, etc.; 80 evaluation points
 `geom_quantile()`  | `stat_quantile()`  | 3 quartiles; "br" method (modified Barrodale & Roberts method; calls `quantreg::rq()`)
-`geom_contour()`   | `stat_contour()`   | 10 `pretty` breakpoints that cover the [range of z]
+`geom_contour()`   | `stat_contour()`   | 10 `pretty` breakpoints covering [range of z]
 
 *** =pnotes
 
@@ -303,7 +302,7 @@ geom               | stat               | modifiable defaults
 
 ---
 
-## Other `ggplot` transformations (excluding identity)
+## Other `ggplot` transformations
 
 * `stat_ecdf`: Empirical Cumulative Density Function
 * `stat_function`: Superimpose a function.
@@ -314,18 +313,21 @@ geom               | stat               | modifiable defaults
 * `stat_summary_hex`: Apply funciton for 2D hexagonal bins.
 * `stat_summary2d`: Apply function for 2D rectangular bins.
 * `stat_unique`: Remove duplicates.
+* `stat_identity`
 
 ---
 
-## Summarizing the data
+## Summarizing the data with `dplyr`
 
-```{r summarizebball, fig.cap=" ", message=FALSE, cache=FALSE}
-library(dplyr)    # new and way faster than plyr
+```{r summarizebball, message=FALSE, cache=FALSE}
+library(dplyr)
+# dplyr is new and way faster than plyr. however,
+# if plyr accidentally gets loaded, fxn names can conflict
 ncaa.basketball[["team.regseason.summ"]] = 
 	subset(ncaa.basketball[["teams"]], 
 		game.type=="Regular Season") %>% 
 	group_by(team.name,season) %>% 
-	summarise(win.pct = mean(result=="Win"),
+	dplyr::summarise(win.pct = mean(result=="Win"),
 		points.avg = mean(score),
 		mov.avg = mean(score-opp.score), # margin of victory
 		fg.pct.avg = mean(fgm/fga),      # field goals
@@ -336,7 +338,7 @@ ncaa.basketball[["team.regseason.summ"]] =
 ncaa.basketball[["team.season.seed"]] = 
 	subset(ncaa.basketball[["teams"]], game.type=="Tournament") %>%
 	group_by(team.name,season) %>% 
-	summarise(tourney.seed = unique(seed))
+	dplyr::summarise(tourney.seed = unique(seed))
 
 ncaa.basketball[["team.season.summ"]] = left_join(
 	ncaa.basketball[["team.regseason.summ"]],
@@ -348,32 +350,70 @@ ncaa.basketball[["team.season.summ"]] = left_join(
 
 ## A heatmap with `geom_tile`
 
+
+
+
+*** =pnotes
+
+Note that there is a package called `gplots` with a function called `heatmap.2`: this is commonly used to make heatmaps with dendrograms but is not the same as `ggplot`.
+
 ---
 
-## Where to go for help with `ggplot`
+## Adding a dendrogram to the heatmap
+
+---
+
+## Using dates in `ggplot2`
+
+
+--- &twocol
+
+## Packages that pair well with `ggplot2`
+
+*** =left
+
+- [grid](https://stat.ethz.ch/R-manual/R-devel/library/grid/html/00Index.html)
+- [gridExtra](http://cran.r-project.org/web/packages/gridExtra/index.html): additional functions to tweak/manipulate grid graphics
+- [scales](http://cran.r-project.org/web/packages/scales/index.html): additional functions to deal with the `scale` portions of the grammar of graphics
+- [gtable](http://cran.r-project.org/web/packages/gtable/index.html): use to dismantle/hack underlying table of Grid Graphical Objects (grobs) that make up a `ggplot`
+- [ggsubplot](http://cran.r-project.org/web/packages/ggsubplot/index.html): embed smaller subplots within larger plots, all using `ggplot2` graphics
+- [dplyr](http://cran.r-project.org/web/packages/dplyr/index.html) (or [plyr](http://cran.r-project.org/web/packages/plyr/index.html)): manipulate data
+- [tidyr](http://cran.r-project.org/web/packages/tidyr/index.html) (or [reshape2](http://cran.r-project.org/web/packages/reshape2/index.html)): restructure data (esp. wide $\leftrightarrow$ long)
+- [lubridate](http://cran.r-project.org/web/packages/lubridate/index.html): "makes working with dates fun instead of frustrating"
+- [devtools](http://cran.r-project.org/web/packages/devtools/index.html): R package development tools (esp. ability to install packages from github rather than CRAN)
+
+*** =right
+
+- [ggthemes](http://cran.r-project.org/web/packages/ggthemes/index.html), [xkcd](http://cran.r-project.org/web/packages/xkcd/index.html): for when you don't want your `ggplot` to look so much like a `ggplot`
+- [extrafont](http://cran.r-project.org/web/packages/extrafont/index.html), [RColorBrewer](http://cran.r-project.org/web/packages/RColorBrewer/index.html), [munsell](http://cran.r-project.org/web/packages/munsell/index.html), https://github.com/karthik/wesanderson : custom fonts and color schemes
+- [ggdendro](http://cran.r-project.org/web/packages/ggdendro/index.html): dendrograms and trees with `ggplot2`
+- [GGally](http://cran.r-project.org/web/packages/GGally/index.html): plot matrices (as in `graphics::pairs`), parallel coordinate plots, and network plots with `ggplot2`
+- [ggtern](http://cran.r-project.org/web/packages/ggtern/index.html): ternary plots (as in `vcd::ternaryplot`) and other additional *geom*s for `ggplot2`.
+- [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html), [maps](http://cran.r-project.org/web/packages/maps/index.html), [maptools](http://cran.r-project.org/web/packages/maptools/index.html), [sp](http://cran.r-project.org/web/packages/sp/index.html), [rgdal](http://cran.r-project.org/web/packages/rgdal/index.html), [RgoogleMaps](http://cran.r-project.org/web/packages/RgoogleMaps/index.html): maps with `ggplot2`
+- [ggHorizon](http://cran.r-project.org/web/packages/ggHorizon/index.html) horizon graphs with `ggplot2` ([example 1](http://www.perceptualedge.com/articles/visual_business_intelligence/time_on_the_horizon.pdf), [example 2](http://vis.berkeley.edu/papers/horizon/2009-TimeSeries-CHI.pdf))
+- $\ldots$
+
+*** =pnotes
+
+* The examples for ggsubplot are a little "busy" but it actually can be useful in practice.  For example, if you want to zoom in on a particular part of a plot and show it as an inset, or show an inset of what a particular graph would look like under conditions like the null, and so on.
+* Note that the munsell color system is what is used by ggplot by default, but you may want to use the same color system to make your own palettes.
+
+* tidyr: http://blog.rstudio.org/2014/07/22/introducing-tidyr/ http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+stringr?
+profr?
+
+grid: unit, viewport
+ggthemes theme_few() + scale_colour_few()
+
+---
+
+## Where to go for help with `ggplot2`
 
 * [Hadley Wickham's ggplot2 book (2009)](http://link.springer.com/book/10.1007%2F978-0-387-98141-3)
 * [companion website to the book](http://ggplot2.org/book/)
 * [official documentation](http://docs.ggplot2.org/current/)
 * [google group](https://groups.google.com/forum/#!forum/ggplot2)
 * [ggplot2 on stackoverflow](http://stackoverflow.com/tags/ggplot2/info)
-
-
---- &twocol
-
-## Other "companion" packages to `ggplot2`
-
-*** =left
-
-- point 1
-- point 2
-- point 3
-
-*** =right
-
-- point 1
-- point 2
-- point 3
 
 ---
 
@@ -385,9 +425,9 @@ ncaa.basketball[["team.season.summ"]] = left_join(
 
 *** =left
 
-- point 1
-- point 2
-- point 3
+- They're pretty, fun, and people love them (see [Hans Rosling's TED talks](https://www.ted.com/speakers/hans_rosling)).
+- They allow you to engage with, explore, and discover more about your data -- visually.
+- Static graphics are "dead" (according to The Economist).
 
 *** =right
 
@@ -397,7 +437,7 @@ ncaa.basketball[["team.season.summ"]] = left_join(
 
 ## MotionChart with `googleVis` (Flash)
 
-```{r googlevis1, results='asis', message=FALSE, eval=FALSE}
+```{r googlevis0, results='asis', message=FALSE, eval=FALSE}
 library(googleVis)
 # data.frame with >=4 cols: x, y, id, time. color and size optional
 mc = gvisMotionChart(ncaa.basketball[["team.season.summ"]], 
@@ -410,7 +450,7 @@ print(mc, 'chart')
 
 ---
 
-```{r googlevis2, results='asis', message=FALSE, echo=FALSE, cache=FALSE}
+```{r googlevis1, results='asis', message=FALSE, echo=FALSE, cache=FALSE}
 library(googleVis)
 # data.frame with >=4 cols: x, y, id, time. color and size optional
 mc = gvisMotionChart(ncaa.basketball[["team.season.summ"]], 
@@ -433,33 +473,35 @@ The functions of the googleVis package allow the user to visualise data stored i
 
 *** =left
 
-- googleVis
-- rCharts
-- rMaps
-- gridSVG
-- [plotly](http://ropensci.org/blog/2014/04/17/plotly/)
-- [networkD3](http://christophergandrud.github.io/networkD3/)
-- gg2v
-- ggvis
-- rggobi, ggobi, DescribeDisplay
+- [gridSVG](http://cran.r-project.org/web/packages/gridSVG/index.html): `ggplot2` and `lattice` graphics $\rightarrow$ SVG image
+- [plotly](https://github.com/ropensci/plotly): `ggplot2` graphics $\rightarrow$ SVG via [plot.ly's R API](https://plot.ly/r/)
+- [googleVis](http://cran.r-project.org/web/packages/googleVis/index.html): R interface to Google Charts API; SVG and Flash
+- [rCharts](https://github.com/ramnathv/rCharts): SVG graphics with popular JS libs, directly from R
+- [ggvis](http://cran.r-project.org/web/packages/ggvis/index.html): SVG and HTML5 Canvas graphics, rendered using [vega](http://trifacta.github.io/vega/), declared in a "grammar of graphics" style similar to `ggplot2`
 
 *** =right
 
-- clickme
-- playwith
-- rVega
-- iplots/iwidgets/JavaGD
-- rgl
-- iwplot
-- webvis
-- SVGAnnotation
+- [clickme](https://github.com/nachocab/clickme): interactive SVG graphics from R
+- [rMaps](https://github.com/ramnathv/rMaps): interactive maps with popular JS libs, directly from R
+- [networkD3](http://github.com/christophergandrud/networkD3/): [d3.js](http://d3js.org/) network graphs from R (SVG)
+- [rgl](http://cran.r-project.org/web/packages/rgl/index.html): interactive 3D visualizations using OpenGL and other frameworks/formats ([example](https://dl.dropboxusercontent.com/u/15335397/misc/webgl-rmd.html))
+- [rggobi](http://cran.r-project.org/web/packages/rggobi/index.html): R interface to [GGobi](http://www.ggobi.org/), a "data visualization system" separate from R
+- [SVGAnnotation](http://bioconductor.org/packages/release/extra/html/SVGAnnotation.html): used for "post-processing SVG plots created in R"
 
 *** =pnotes
-* rMaps: one nice usage case is pkg rCrimemap
-gridSVG
-	http://timelyportfolio.github.io/gridSVG_intro/
-	http://stackoverflow.com/questions/23852753/knitr-with-gridsvg
-	
+
+* I'm only listing R packages that are currently available to download and use, appear to be actively maintained and haven't been subsumed by other R packages, produce graphics that can viewed in a web browser locally or embedded in an html document like this one that was produced with knitr and rmarkdown. I'm not going to list anything that requires server-side support from interfaces like Shiny or Rook to be interactive, for example. Whether or not SVGAnnotation is actively maintained is questionable, but I listed it anyway because it's still referenced by people, it does seem to offer some unique features, and one of the two developers on it was Deborah Nolan who is right here at Berkeley.
+* Many of these produce graphics in SVG, or Scalable Vector Graphics, which is, according to wikipedia, an XML-based vector image format for 2D graphics with support for interactivity and animation.  Not all of them do, though -- for example, googleVis produces some output as Flash.
+* Paul Murrell, who wrote grid, the backbone of both ggplot2 and lattice, also wrote gridSVG, along with one of his students, Simon Potter.
+* [tabplotd3](http://cran.r-project.org/web/packages/tabplotd3/index.html): interactive tableplots (see [tabplot](http://cran.r-project.org/web/packages/tabplot/index.html)) - but needs to be served by [Rook](http://cran.r-project.org/web/packages/Rook/index.html)?
+* rCharts
+    + https://github.com/ramnathv/user2014-rcharts
+    + http://zevross.com/blog/2014/04/03/interactive-visualization-from-r-to-d3-using-rcharts/
+    + http://timelyportfolio.blogspot.com/2013/04/d3-r-with-rcharts-and-slidify.html
+* gridSVG
+    + http://timelyportfolio.github.io/gridSVG_intro/
+    + http://stackoverflow.com/questions/23852753/knitr-with-gridsvg
+
 ---
 
 # Questions?
@@ -472,25 +514,12 @@ gridSVG
 PrintBibliography(bib, .opts = list(check.entries = FALSE, sorting = "ynt"))
 ```
 
---- &twocol
+---
 
 ## Credits
-
-*** =left
 
 #### Built using [slidify](https://github.com/ramnathv/slidify) with
 + [knitr](http://cran.r-project.org/web/packages/knitr/index.html),
 + the [deck.js](https://github.com/imakewebthings/deck.js) framework,
-+ the [notes](https://github.com/freekh/deck.js-notes) extension, 
 + the [RefManageR](http://cran.r-project.org/web/packages/RefManageR/index.html) bibliography manager, and
 + the [prettify](https://code.google.com/p/google-code-prettify/) syntax highlighter.
-
-*** =right
-
-#### R packages in demos:
-+ [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html)
-+ [dplyr](http://cran.r-project.org/web/packages/dplyr/index.html)
-+ [lubridate](http://cran.r-project.org/web/packages/lubridate/index.html)
-+ [devtools](http://cran.r-project.org/web/packages/devtools/index.html)
-+ [rCharts](https://github.com/ramnathv/rCharts)
-+ [googleVis](http://cran.r-project.org/web/packages/googleVis/index.html)
