@@ -379,7 +379,7 @@ p = ggplot(subset(ncaa.bball[["team.season.summ"]],
 	scale_fill_gradientn(
 		"Proportion of regular season games won",
 		colours = brewer.pal(9,"GnBu")[3:9],
-		na.value="grey80", breaks=seq(0,1,0.25),
+		na.value="grey80", breaks=seq(0,1,0.25), limits=c(0,1),
 		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
 	scale_x_continuous("Season", expand = c(0, 0)) + 
 	scale_y_discrete("Team", expand = c(0, 0)) +
@@ -614,7 +614,7 @@ cmplot = with(subset(ncaa.bball[["team.season.summ"]],
 	    height = 600, width = 700))
 # cmplot # in an R session, open in browser
 # embed in knitr document:
-cmplot$iframe(relative_path = getwd())$hide()
+cmplot$iframe()$hide()
 ```
 
 ---
@@ -638,7 +638,7 @@ cmplot = with(subset(ncaa.bball[["team.season.summ"]],
 	    height = 600, width = 700))
 # cmplot # in an R session, open in browser
 # embed in knitr document:
-cmplot$iframe(relative_path = getwd())$hide()
+cmplot$iframe()$hide()
 ```
 
 ---
