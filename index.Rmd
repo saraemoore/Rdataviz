@@ -33,7 +33,7 @@ bib = ReadBib("references.bib", check = FALSE)
 
 You have:
 * a working knowledge of R,
-* at least some familiarity with the usage of `ggplot2` (such as what was presented during the [2013](https://github.com/berkeley-scf/r-bootcamp-2013/) or [2014 UC Berkeley SCF/D-Lab R Bootcamp](https://github.com/berkeley-scf/r-bootcamp-2014/)),
+* some familiarity with the usage of `ggplot2` (such as what was presented during the [2013](https://github.com/berkeley-scf/r-bootcamp-2013/) or [2014 UC Berkeley SCF/D-Lab R Bootcamp](https://github.com/berkeley-scf/r-bootcamp-2014/)),
 * an interest in creating data visualizations in R, both **static** (mostly using *ggplot2*) and **interactive** (using a variety of packages).
 
 ---
@@ -160,11 +160,11 @@ ggplot() +
 * [Kaggle March Machine Learning "Mania" 2015](http://www.kaggle.com/c/march-machine-learning-mania-2015)
 
 ```{r loaddata, message=FALSE, cache=FALSE}
-source(paste("assets","load_clean_marchmania2015.R", 
+source(paste("assets","load_marchmania2015.R", 
 	sep=.Platform[["file.sep"]]))
 # change this path to the location of your CSVs downloaded from kaggle
 # note that required packages will be installed automatically
-ncaa.basketball = load.clean.ncaa("~/Dropbox/kaggle/marchmania2015")
+ncaa.bball = load.clean.summ.ncaa("~/Dropbox/kaggle/marchmania2015")
 ```
 
 * Alternatively, use data that ships with `ggplot2`: 
@@ -179,25 +179,27 @@ The dataset I'll be using throughout the presentation is from a Kaggle competiti
 
 ---
 
-## Starting easy: a scatterplot
+## A simple scatterplot
 ```{r simple-scatterplot0, fig.cap=" ", message=FALSE, eval=FALSE}
 library(ggplot2)
-ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
+ggplot(data=ncaa.bball[["games"]], aes(x=lscore, y=wscore)) + 
 	geom_point() + 
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
-	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
+	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014") +
+	theme(text = element_text(size = 16))
 ```
 
 ---
 
 ```{r simple-scatterplot1, fig.cap=" ", fig.height=9, fig.width=11.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
 library(ggplot2)
-ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
+ggplot(data=ncaa.bball[["games"]], aes(x=lscore, y=wscore)) + 
 	geom_point() + 
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
-	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
+	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014") +
+	theme(text = element_text(size = 16))
 ```
 
 *** =pnotes
@@ -210,29 +212,39 @@ ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) +
 
 ## Improving the scatterplot
 ```{r statbinhex0, fig.cap=" ", eval=FALSE}
-ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
+library(munsell) # color system used by ggplot2
+ggplot(data=ncaa.bball[["games"]], aes(x=lscore, y=wscore)) + 
 	# default is bins=c(30,30) 
 	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	stat_binhex(binwidth=c(4, 4)) + 
-	scale_fill_gradient("Number of games", trans="log") +
+	# mnsl converts [hue lightness/color purity] to hex color codes.
+	# scale_fill_gradient == scale_fill_continuous.
+	scale_fill_gradient("Number of games", trans = "sqrt",
+		low=mnsl("7.5G 2/4"), high=mnsl("7.5G 9/6")) +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
-	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
+	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014") +
+	theme_classic(base_size = 16)
 ```
 
 ---
 
 ```{r statbinhex1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
-ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
+library(munsell)
+ggplot(data=ncaa.bball[["games"]], aes(x=lscore, y=wscore)) + 
 	# default is bins=c(30,30) 
 	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	stat_binhex(binwidth=c(4, 4)) + 
-	scale_fill_gradient("Number of games", trans="log") +
+	# scale_fill_gradient == scale_fill_continuous.
+	# the mnsl fxn converts [hue lightness/color purity] to hex color codes.
+	scale_fill_gradient("Number of games", trans = "sqrt",
+		low=mnsl("7.5G 2/4"), high=mnsl("7.5G 9/6")) +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
-	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
+	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014") +
+	theme_classic(base_size = 16)
 ```
 
 *** =pnotes
@@ -243,29 +255,37 @@ Here we are explicitly calling a ggplot transformation that asks ggplot to hexag
 
 ## Improving the scatterplot
 ```{r geomhex0, fig.cap=" ", message=FALSE, eval=FALSE}
-ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
+ggplot(data=ncaa.bball[["games"]], aes(x=lscore, y=wscore)) + 
 	# default is bins=c(30,30) 
 	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	geom_hex(stat = "binhex", binwidth=c(4,4)) + 
-	scale_fill_gradient("Number of games", trans="log") +
+	# scale_fill_gradient == scale_fill_continuous.
+	# the mnsl fxn converts [hue lightness/color purity] to hex color codes.
+	scale_fill_gradient("Number of games", trans = "sqrt",
+		low=mnsl("7.5G 2/4"), high=mnsl("7.5G 9/6")) +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
-	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
+	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014") +
+	theme_classic(base_size = 16)
 ```
 
 ---
 
 ```{r geomhex1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
-ggplot(data=ncaa.basketball[["games"]], aes(x=lscore, y=wscore)) + 
+ggplot(data=ncaa.bball[["games"]], aes(x=lscore, y=wscore)) + 
 	# default is bins=c(30,30) 
 	# can use scalar when no. of bins for x and y are same.
 	# here alternatively specifying binwidth:
 	geom_hex(stat = "binhex", binwidth=c(4,4)) + 
-	scale_fill_gradient("Number of games", trans="log") +
+	# scale_fill_gradient == scale_fill_continuous.
+	# the mnsl fxn converts [hue lightness/color purity] to hex color codes.
+	scale_fill_gradient("Number of games", trans = "sqrt",
+		low=mnsl("7.5G 2/4"), high=mnsl("7.5G 9/6")) +
 	xlab("Points scored by losing team") +
 	ylab("Points scored by winning team") +
-	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014")
+	ggtitle("Final scores of NCAA basketball games\nNovember 1984 - April 2014") +
+	theme_classic(base_size = 16)
 ```
 
 *** =pnotes
@@ -317,41 +337,59 @@ geom               | stat               | modifiable defaults
 
 ---
 
-## Summarizing the data with `dplyr`
+## A heatmap with `geom_tile`
 
-```{r summarizebball, message=FALSE, cache=FALSE}
-library(dplyr)
-# dplyr is new and way faster than plyr. however,
-# if plyr accidentally gets loaded, fxn names can conflict
-ncaa.basketball[["team.regseason.summ"]] = 
-	subset(ncaa.basketball[["teams"]], 
-		game.type=="Regular Season") %>% 
-	group_by(team.name,season) %>% 
-	dplyr::summarise(win.pct = mean(result=="Win"),
-		points.avg = mean(score),
-		mov.avg = mean(score-opp.score), # margin of victory
-		fg.pct.avg = mean(fgm/fga),      # field goals
-		fg3.pct.avg = mean(fgm3/fga3),   # three pointers
-		ft.pct.avg = mean(ftm/fta),      # free throws
-		rebound.avg = mean(or+dr))
-
-ncaa.basketball[["team.season.seed"]] = 
-	subset(ncaa.basketball[["teams"]], game.type=="Tournament") %>%
-	group_by(team.name,season) %>% 
-	dplyr::summarise(tourney.seed = unique(seed))
-
-ncaa.basketball[["team.season.summ"]] = left_join(
-	ncaa.basketball[["team.regseason.summ"]],
-	ncaa.basketball[["team.season.seed"]], 
-	by = c("team.name","season"))
+```{r heatmap0, results='asis', message=FALSE, eval=FALSE}
+library(RColorBrewer) # brewer.pal
+library(grid)         # unit
+tourney.teams.2014 = as.character(
+	unique(subset(ncaa.bball[["team.season.summ"]],
+		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
+p = ggplot(subset(ncaa.bball[["team.season.summ"]], 
+		team.name%in%tourney.teams.2014),
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu")[3:9],
+		na.value="grey80", breaks=seq(0,1,0.25),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p
 ```
 
 ---
 
-## A heatmap with `geom_tile`
-
-
-
+```{r heatmap1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+library(RColorBrewer) # brewer.pal
+library(grid)         # unit
+tourney.teams.2014 = as.character(
+	unique(subset(ncaa.bball[["team.season.summ"]],
+		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
+p = ggplot(subset(ncaa.bball[["team.season.summ"]], 
+		team.name%in%tourney.teams.2014),
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu")[3:9],
+		na.value="grey80", breaks=seq(0,1,0.25),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p
+```
 
 *** =pnotes
 
@@ -363,8 +401,53 @@ Note that there is a package called `gplots` with a function called `heatmap.2`:
 
 ---
 
-## Using dates in `ggplot2`
+## Dates, `tidyr`, and summaries with `ggplot2`
 
+```{r datescaleduke0, results='asis', message=FALSE, eval=FALSE}
+library(tidyr) # gather
+duke.2014 = subset(ncaa.bball[["teams"]], 
+		(season==2014)&(team.name=="Duke"))[,
+		c("date","fg.pct","fg3.pct","ft.pct","result")] %>%
+	tidyr::gather(shot.type, pct, -c(date, result))
+
+library(scales) # date_format
+ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
+	geom_line() +
+	geom_line(stat = "hline", yintercept = "mean",
+		linetype="dashed", alpha=0.65) +
+	geom_rug(data=subset(duke.2014,(result=="Loss")&(shot.type=="fg.pct")), 
+		sides="b", color="grey20") +
+	scale_x_datetime("Game date", labels = date_format("%b %Y")) +
+	ylab("Proportion of shots made") +
+	scale_color_discrete("Type of shot", 
+		labels=c("two point field goal","three point field goal","free throw")) +
+	ggtitle("Duke's per-game shot percentages, 2013-14 season:\nbottom ticks indicate losses; dashed lines are season averages") +
+	theme_classic(base_size = 16) + theme(legend.position = "bottom")
+```
+
+---
+
+```{r datescaleduke1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+library(tidyr) # gather
+duke.2014 = subset(ncaa.bball[["teams"]], 
+		(season==2014)&(team.name=="Duke"))[,
+		c("date","fg.pct","fg3.pct","ft.pct","result")] %>%
+	tidyr::gather(shot.type, pct, -c(date, result))
+
+library(scales) # date_format
+ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
+	geom_line() +
+	geom_line(stat = "hline", yintercept = "mean",
+		linetype="dashed", alpha=0.65) +
+	geom_rug(data=subset(duke.2014,(result=="Loss")&(shot.type=="fg.pct")), 
+		sides="b", color="grey20") +
+	scale_x_datetime("Game date", labels = date_format("%b %Y")) +
+	ylab("Proportion of shots made") +
+	scale_color_discrete("Type of shot", 
+		labels=c("two point field goal","three point field goal","free throw")) +
+	ggtitle("Duke's per-game shot percentages, 2013-14 season:\nbottom ticks indicate losses; dashed lines are season averages") +
+	theme_classic(base_size = 16) + theme(legend.position = "bottom")
+```
 
 --- &twocol
 
@@ -435,32 +518,167 @@ ggthemes theme_few() + scale_colour_few()
 
 ---
 
+## SVG `ggplot` with `plotly`
+
+```{r plotly0static, results='asis', message=FALSE, eval=FALSE}
+# start with a static ggplot
+p = ggplot(subset(ncaa.bball[["team.season.summ"]], 
+		max.tourney.round>="Sweet Sixteen"),
+	aes(x=season, y=win.pct, color=max.tourney.round)) +
+	# ideally we would jitter here, but plotly has trouble with this
+	# geom_point(position = position_jitter(w = 0.4, h = 0.002)) +
+	geom_point(size=3, alpha=0.7) + # instead use transparency
+	xlab("Year") + 
+	ylab("Proportion of regular season games won") +
+	scale_color_discrete("Highest tournament round achieved") +
+	ggtitle("Regular season performance of 'Sweet Sixteen' teams 1985-2014, by season") +
+	theme_classic(base_size = 16) + theme(legend.position = "bottom")
+p
+```
+
+---
+
+```{r plotly1static, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+p = ggplot(subset(ncaa.bball[["team.season.summ"]], 
+		max.tourney.round>="Sweet Sixteen"),
+	aes(x=season, y=win.pct, color=max.tourney.round)) +
+	# ideally we would jitter here, but plotly has trouble with this
+	# geom_point(position = position_jitter(w = 0.4, h = 0.002)) +
+	geom_point(size=3, alpha=0.7) + # instead use transparency
+	xlab("Year") + 
+	ylab("Proportion of regular season games won") +
+	scale_color_discrete("Highest tournament round achieved") +
+	ggtitle("Regular season performance of 'Sweet 16' teams 1985-2014, by season") +
+	theme_classic(base_size = 16) + theme(legend.position = "bottom")
+p
+```
+
+---
+
+## SVG `ggplot` with `plotly`
+
+```{r plotly0, results='asis', message=FALSE, eval=FALSE}
+# library(devtools)
+# install_github("ropensci/plotly")
+library(plotly)
+
+# get a plot.ly account and get your api key here:
+# https://plot.ly/settings/api
+# plug it in with your username in the statement below.
+# set_credentials_file("username", "xxxxxxxxxx")
+
+py <- plotly()
+# recall p is the object returned by ggplot
+# plot.info = py$ggplotly(p) # in an R session, opens in browser
+plot.info = py$ggplotly(p, session="knitr") # embed in knitr document
+# if you're embedding in a knitr document, 
+# be sure to also set the code chunk
+# plotly=TRUE
+```
+
+---
+
+```{r plotly1, results='asis', message=FALSE, echo=FALSE, plotly=TRUE}
+library(plotly)
+py <- plotly()
+plot.info = py$ggplotly(p, session="knitr") # embed in knitr document
+```
+
+*** =pnotes
+
+* Note that graphics are uploaded to plot.ly and are **public** by default. So, don't use this unless you're ok with other people seeing it.
+* Also, the conversion does not always go as planned.  Sometimes the ggplotly function will reject the ggplot object with a cryptic error message. Sometimes it will convert it, but it will not look sensible. The tooltips are also not as helpful as they could be -- but there are apparently cumbersome ways to hack them. Your mileage may vary.
+
+---
+
+## SVG graphic with `clickme`
+
+```{r clickme0, results='asis', message=FALSE, eval=FALSE}
+# library(devtools)
+# install_github("nachocab/clickme")
+library(clickme)
+cmplot = with(subset(ncaa.bball[["team.season.summ"]], 
+		max.tourney.round>="Sweet Sixteen"),
+	clickme("points",
+	    x = season, y = win.pct,
+	    names = team.name,
+	    color_groups = as.character(max.tourney.round),
+	    x_title = "Year", x_format = "",
+	    y_title = "Proportion of regular season games won",
+	    color_title = "Highest tournament round achieved",
+	    color_group_order = levels(max.tourney.round)[4:8],
+	    title = "Regular season performance of 'Sweet 16' teams",
+	    subtitle = "1985-2014, by season",
+	    file_path = paste(getwd(),"clickme0.html", 
+	    	sep=.Platform$file.sep),
+	    height = 600, width = 700))
+# cmplot # in an R session, open in browser
+# embed in knitr document:
+cmplot$iframe(relative_path = getwd())$hide()
+```
+
+---
+
+```{r clickme1, results='asis', message=FALSE, echo=FALSE}
+library(clickme)
+cmplot = with(subset(ncaa.bball[["team.season.summ"]], 
+		max.tourney.round>="Sweet Sixteen"),
+	clickme("points",
+	    x = season, y = win.pct,
+	    names = team.name,
+	    color_groups = as.character(max.tourney.round),
+	    x_title = "Year", x_format = "",
+	    y_title = "Proportion of regular season games won",
+	    color_title = "Highest tournament round achieved",
+	    color_group_order = levels(max.tourney.round)[4:8],
+	    title = "Regular season performance of 'Sweet 16' teams",
+	    subtitle = "1985-2014, by season",
+	    file_path = paste(getwd(),"clickme0.html", 
+	    	sep=.Platform$file.sep),
+	    height = 600, width = 700))
+# cmplot # in an R session, open in browser
+# embed in knitr document:
+cmplot$iframe(relative_path = getwd())$hide()
+```
+
+---
+
 ## MotionChart with `googleVis` (Flash)
 
 ```{r googlevis0, results='asis', message=FALSE, eval=FALSE}
 library(googleVis)
-# data.frame with >=4 cols: x, y, id, time. color and size optional
-mc = gvisMotionChart(ncaa.basketball[["team.season.summ"]], 
+# data.frame with >=4 cols: x, y, id, time. color and size optional,
+# but if you don't provide them, 
+# it will choose them for you (if there are columns left to use)
+mc = gvisMotionChart(
+	subset(ncaa.bball[["team.season.summ"]], 
+		!is.na(tourney.seed))[,c("team.name", "season", "win.pct", 
+			"points.avg", "mov.avg", "tourney.seed")],
 	idvar="team.name", timevar="season", 
 	xvar="win.pct", yvar="tourney.seed",
+	sizevar="mov.avg", colorvar="points.avg",
 	options=list(width=750, height=650))
-# plot(mc)
-print(mc, 'chart')
+# plot(mc) # in an R session, opens in browser
+print(mc, 'chart') # embed in knitr document
 ```
 
 ---
 
 ```{r googlevis1, results='asis', message=FALSE, echo=FALSE, cache=FALSE}
 library(googleVis)
-# data.frame with >=4 cols: x, y, id, time. color and size optional
-mc = gvisMotionChart(ncaa.basketball[["team.season.summ"]], 
+# data.frame with >=4 cols: x, y, id, time. color and size optional,
+# but if you don't provide them, 
+# it will choose them for you (if there are columns left to use)
+mc = gvisMotionChart(
+	subset(ncaa.bball[["team.season.summ"]], 
+		!is.na(tourney.seed))[, c("team.name", "season", "win.pct", 
+			"points.avg", "mov.avg", "tourney.seed")],
 	idvar="team.name", timevar="season", 
 	xvar="win.pct", yvar="tourney.seed",
-	options=list(width=750, height=650,
-		hAxis="{title:'Percent of regular season games won'}",
-        vAxis="{title:'Tournament seed'}"))
-# plot(mc)
-print(mc, 'chart')
+	sizevar="mov.avg", colorvar="points.avg",
+	options=list(width=750, height=650))
+# plot(mc) # in an R session, opens in browser
+print(mc, 'chart') # embed in knitr document
 ```
 
 *** =pnotes
@@ -473,11 +691,11 @@ The functions of the googleVis package allow the user to visualise data stored i
 
 *** =left
 
-- [gridSVG](http://cran.r-project.org/web/packages/gridSVG/index.html): `ggplot2` and `lattice` graphics $\rightarrow$ SVG image
 - [plotly](https://github.com/ropensci/plotly): `ggplot2` graphics $\rightarrow$ SVG via [plot.ly's R API](https://plot.ly/r/)
 - [googleVis](http://cran.r-project.org/web/packages/googleVis/index.html): R interface to Google Charts API; SVG and Flash
 - [rCharts](https://github.com/ramnathv/rCharts): SVG graphics with popular JS libs, directly from R
 - [ggvis](http://cran.r-project.org/web/packages/ggvis/index.html): SVG and HTML5 Canvas graphics, rendered using [vega](http://trifacta.github.io/vega/), declared in a "grammar of graphics" style similar to `ggplot2`
+- [gridSVG](http://cran.r-project.org/web/packages/gridSVG/index.html): `ggplot2` and `lattice` graphics $\rightarrow$ SVG image
 
 *** =right
 

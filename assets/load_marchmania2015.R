@@ -2,7 +2,7 @@
 # https://www.kaggle.com/c/march-machine-learning-mania-2015/data 
 # and placed them on the provided path
 # (empty string should search current working directory)
-load.clean.ncaa = function(data.dir){
+load.clean.summ.ncaa = function(data.dir){
 	# ------------------------------------------------------------------------------
 	# load libraries:
 	# ------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ load.clean.ncaa = function(data.dir){
 	# ------------------------------------------------------------------------------
 	# clean/merge/summarize data:
 	# ------------------------------------------------------------------------------
-	message("Cleaning data...")
+	message("Cleaning and summarizing data...")
 	# merge together the compact and detailed records for "regular season" games
 	march.mania.df.list$regular_season_results = merge(
 		march.mania.df.list$regular_season_compact_results, 
@@ -125,13 +125,51 @@ load.clean.ncaa = function(data.dir){
 	march.mania.df.list$team_results = rbind_all(march.mania.df.list[c("winner_results","loser_results")])
 	march.mania.df.list$team_results$result = as.factor(march.mania.df.list$team_results$result)
 
-	ncaa.team.results = march.mania.df.list$team_results
-	ncaa.game.results = march.mania.df.list$game_results
-	tourney.slots = march.mania.df.list$tourney_slots
-	tourney.regions = march.mania.df.list$seasons[,-which(colnames(march.mania.df.list$seasons)=="dayzero")]
+	march.mania.df.list$team_results$fg.pct = with(march.mania.df.list$team_results, fgm/fga)
+	march.mania.df.list$team_results$fg3.pct = with(march.mania.df.list$team_results, fgm3/fga3)
+	march.mania.df.list$team_results$ft.pct = with(march.mania.df.list$team_results, ftm/fta)
+	march.mania.df.list$team_results$mov = with(march.mania.df.list$team_results, score-opp.score)
+
+	# dplyr is new and way faster than plyr. however,
+	# if plyr accidentally gets loaded, fxn names can conflict
+	march.mania.df.list$summ.by.team.regseason = subset(march.mania.df.list$team_results, 
+			game.type=="Regular Season") %>%
+		group_by(team.name,season) %>% 
+		dplyr::summarise(win.pct = mean(result=="Win"),
+			points.avg = mean(score),
+			mov.avg = mean(score-opp.score), # margin of victory
+			fg.pct.avg = mean(fgm/fga),      # field goals
+			fg3.pct.avg = mean(fgm3/fga3),   # three pointers
+			ft.pct.avg = mean(ftm/fta),      # free throws
+			rebound.avg = mean(or+dr))
+
+	march.mania.df.list$team.season.seed = subset(march.mania.df.list$team_results, 
+			game.type=="Tournament") %>%
+		group_by(team.name,season) %>% 
+		dplyr::summarise(tourney.seed = unique(seed),
+			tourney.rounds.playin = as.numeric(!is.na(first(seed.playin))),
+			tourney.rounds.tot = n_distinct(opp.team),
+			tourney.winner = as.numeric(last(result)=="Win"))
+	march.mania.df.list$team.season.seed$max.tourney.round = with(march.mania.df.list$team.season.seed,
+		factor(tourney.rounds.tot - tourney.rounds.playin + tourney.winner,
+		levels=0:7, labels=c("First Four","Round of 64","Round of 32","Sweet Sixteen",
+			"Elite Eight","Final Four","National Championship","Champion"), 
+		ordered=TRUE))
+	march.mania.df.list$team.season.seed = march.mania.df.list$team.season.seed[,
+		-which(colnames(march.mania.df.list$team.season.seed)%in%c("tourney.rounds.playin", "tourney.rounds.tot"))]
+
+	march.mania.df.list$summ.by.team.season = left_join(march.mania.df.list$summ.by.team.regseason, 
+		march.mania.df.list$team.season.seed,
+		by = c("team.name","season"))
+
+	# not using currently
+	# tourney.slots = march.mania.df.list$tourney_slots
+	# tourney.regions = march.mania.df.list$seasons[,-which(colnames(march.mania.df.list$seasons)=="dayzero")]
 
 	message("Done.")
-	return(list(teams = ncaa.team.results, games = ncaa.game.results))
+	return(with(march.mania.df.list, 
+		list(teams = team_results, games = game_results, 
+			team.season.summ = summ.by.team.season)))
 }
 # fgm - field goals made
 # fga - field goals attempted
