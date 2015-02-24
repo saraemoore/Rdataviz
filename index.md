@@ -493,7 +493,7 @@ plot.info = py$ggplotly(p, session="knitr") # embed in knitr document
 ---
 
 <iframe height="600" id="igraph" scrolling="no" seamless="seamless"
-				src="https://plot.ly/~saraemoore/51" width="600" frameBorder="0"></iframe>
+				src="https://plot.ly/~saraemoore/59" width="600" frameBorder="0"></iframe>
 
 *** =pnotes
 
@@ -558,14 +558,14 @@ print(mc, 'chart') # embed in knitr document
 ---
 
 <!-- MotionChart generated in R 3.1.2 by googleVis 0.5.8 package -->
-<!-- Tue Feb 24 01:34:38 2015 -->
+<!-- Tue Feb 24 01:45:32 2015 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMotionChartID10e2020e63dd9 () {
+function gvisDataMotionChartID10e202dca3fe2 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -16149,15 +16149,15 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMotionChartID10e2020e63dd9() {
-var data = gvisDataMotionChartID10e2020e63dd9();
+function drawChartMotionChartID10e202dca3fe2() {
+var data = gvisDataMotionChartID10e202dca3fe2();
 var options = {};
 options["width"] =    750;
 options["height"] =    650;
 options["state"] = "\n{\"xAxisOption\":\"2\",\"yAxisOption\":\"5\",\"colorOption\":\"3\",\"sizeOption\":\"4\",\"dimensions\":{\"iconDimensions\":[\"dim0\"]}}\n";
 
     var chart = new google.visualization.MotionChart(
-    document.getElementById('MotionChartID10e2020e63dd9')
+    document.getElementById('MotionChartID10e202dca3fe2')
     );
     chart.draw(data,options);
     
@@ -16181,9 +16181,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMotionChartID10e2020e63dd9);
+callbacks.push(drawChartMotionChartID10e202dca3fe2);
 })();
-function displayChartMotionChartID10e2020e63dd9() {
+function displayChartMotionChartID10e202dca3fe2() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -16207,11 +16207,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID10e2020e63dd9"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID10e202dca3fe2"></script>
  
 <!-- divChart -->
   
-<div id="MotionChartID10e2020e63dd9" 
+<div id="MotionChartID10e202dca3fe2" 
   style="width: 750; height: 650;">
 </div>
 
