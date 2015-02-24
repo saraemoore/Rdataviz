@@ -516,7 +516,7 @@ plot.info = py$ggplotly(p, session="knitr") # embed in knitr document
 ---
 
 <iframe height="600" id="igraph" scrolling="no" seamless="seamless"
-				src="https://plot.ly/~saraemoore/63" width="600" frameBorder="0"></iframe>
+				src="https://plot.ly/~saraemoore/67" width="600" frameBorder="0"></iframe>
 
 ---
 
@@ -576,14 +576,14 @@ print(mc, 'chart') # embed in knitr document
 ---
 
 <!-- MotionChart generated in R 3.1.2 by googleVis 0.5.8 package -->
-<!-- Tue Feb 24 13:08:09 2015 -->
+<!-- Tue Feb 24 13:15:37 2015 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMotionChartID4b171b59a7c () {
+function gvisDataMotionChartID4b172989dee () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -16167,15 +16167,15 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMotionChartID4b171b59a7c() {
-var data = gvisDataMotionChartID4b171b59a7c();
+function drawChartMotionChartID4b172989dee() {
+var data = gvisDataMotionChartID4b172989dee();
 var options = {};
 options["width"] =    750;
 options["height"] =    650;
 options["state"] = "\n{\"xAxisOption\":\"2\",\"yAxisOption\":\"5\",\"colorOption\":\"3\",\"sizeOption\":\"4\",\"dimensions\":{\"iconDimensions\":[\"dim0\"]}}\n";
 
     var chart = new google.visualization.MotionChart(
-    document.getElementById('MotionChartID4b171b59a7c')
+    document.getElementById('MotionChartID4b172989dee')
     );
     chart.draw(data,options);
     
@@ -16199,9 +16199,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMotionChartID4b171b59a7c);
+callbacks.push(drawChartMotionChartID4b172989dee);
 })();
-function displayChartMotionChartID4b171b59a7c() {
+function displayChartMotionChartID4b172989dee() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -16225,11 +16225,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID4b171b59a7c"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID4b172989dee"></script>
  
 <!-- divChart -->
   
-<div id="MotionChartID4b171b59a7c" 
+<div id="MotionChartID4b172989dee" 
   style="width: 750; height: 650;">
 </div>
 
