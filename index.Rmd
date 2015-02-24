@@ -337,70 +337,6 @@ geom               | stat               | modifiable defaults
 
 ---
 
-## A heatmap with `geom_tile`
-
-```{r heatmap0, results='asis', message=FALSE, eval=FALSE}
-library(RColorBrewer) # brewer.pal
-library(grid)         # unit
-tourney.teams.2014 = as.character(
-	unique(subset(ncaa.bball[["team.season.summ"]],
-		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
-p = ggplot(subset(ncaa.bball[["team.season.summ"]], 
-		team.name%in%tourney.teams.2014),
-		aes(x=season, y=team.name, fill=win.pct)) +
-	geom_tile() + 
-	scale_fill_gradientn(
-		"Proportion of regular season games won",
-		colours = brewer.pal(9,"GnBu")[3:9],
-		na.value="grey80", breaks=seq(0,1,0.25),
-		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
-	scale_x_continuous("Season", expand = c(0, 0)) + 
-	scale_y_discrete("Team", expand = c(0, 0)) +
-	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
-	theme_classic(base_size=16) + 
-	theme(legend.position = "bottom",
-		axis.text.y = element_text(size = 11),
-		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
-p
-```
-
----
-
-```{r heatmap1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
-library(RColorBrewer) # brewer.pal
-library(grid)         # unit
-tourney.teams.2014 = as.character(
-	unique(subset(ncaa.bball[["team.season.summ"]],
-		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
-p = ggplot(subset(ncaa.bball[["team.season.summ"]], 
-		team.name%in%tourney.teams.2014),
-		aes(x=season, y=team.name, fill=win.pct)) +
-	geom_tile() + 
-	scale_fill_gradientn(
-		"Proportion of regular season games won",
-		colours = brewer.pal(9,"GnBu")[3:9],
-		na.value="grey80", breaks=seq(0,1,0.25), limits=c(0,1),
-		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
-	scale_x_continuous("Season", expand = c(0, 0)) + 
-	scale_y_discrete("Team", expand = c(0, 0)) +
-	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
-	theme_classic(base_size=16) + 
-	theme(legend.position = "bottom",
-		axis.text.y = element_text(size = 11),
-		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
-p
-```
-
-*** =pnotes
-
-Note that there is a package called `gplots` with a function called `heatmap.2`: this is commonly used to make heatmaps with dendrograms but is not the same as `ggplot`.
-
----
-
-## Adding a dendrogram to the heatmap
-
----
-
 ## Dates, `tidyr`, and summaries with `ggplot2`
 
 ```{r datescaleduke0, results='asis', message=FALSE, eval=FALSE}
@@ -447,6 +383,230 @@ ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
 		labels=c("two point field goal","three point field goal","free throw")) +
 	ggtitle("Duke's per-game shot percentages, 2013-14 season:\nbottom ticks indicate losses; dashed lines are season averages") +
 	theme_classic(base_size = 16) + theme(legend.position = "bottom")
+```
+
+---
+
+## A heatmap with `ggplot2::geom_tile`
+
+```{r heatmap0, results='asis', message=FALSE, eval=FALSE}
+library(RColorBrewer) # brewer.pal
+library(grid)         # unit
+tourney.teams.2014 = as.character(
+	unique(subset(ncaa.bball[["team.season.summ"]],
+		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
+hist.perf.teams.2014 = subset(ncaa.bball[["team.season.summ"]], 
+	team.name%in%tourney.teams.2014)
+p1 = ggplot(hist.perf.teams.2014,
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu"),
+		na.value="grey80", breaks=seq(0,1,0.25),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p1
+```
+
+---
+
+```{r heatmap1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+library(RColorBrewer) # brewer.pal
+library(grid)         # unit
+tourney.teams.2014 = as.character(
+	unique(subset(ncaa.bball[["team.season.summ"]],
+		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
+hist.perf.teams.2014 = subset(ncaa.bball[["team.season.summ"]], 
+	team.name%in%tourney.teams.2014)
+p1 = ggplot(hist.perf.teams.2014,
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu"),
+		na.value="grey80", breaks=seq(0,1,0.25), limits=c(0,1),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p1
+```
+
+*** =pnotes
+
+Note that there is a package called `gplots` with a function called `heatmap.2`: this is commonly used to make heatmaps with dendrograms but is not the same as `ggplot`.
+
+---
+
+## Creating a dendrogram with `ggdendro`
+
+```{r dendro0, results='asis', message=FALSE, eval=FALSE}
+library(ggdendro)
+
+team.season.df = subset(ncaa.bball[["team.season.summ"]],
+	team.name%in%tourney.teams.2014)[,
+		c("season", "team.name","win.pct")]
+# use tidyr, but this time go long --> wide (spread)
+team.season.mat = as.matrix(team.season.df %>% spread(team.name, win.pct))
+rownames(team.season.mat) = team.season.mat[,"season"]
+team.season.mat = team.season.mat[ ,-which(colnames(team.season.mat)=="season")]
+
+teams.hc = hclust(dist(t(team.season.mat)), "ave")
+ggdendrogram(teams.hc, rotate = TRUE)
+```
+
+---
+
+```{r dendro1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+library(ggdendro)
+
+team.season.df = subset(ncaa.bball[["team.season.summ"]],
+	team.name%in%tourney.teams.2014)[,
+		c("season", "team.name","win.pct")]
+# use tidyr, but this time go long --> wide (spread)
+team.season.mat = as.matrix(team.season.df %>% spread(team.name, win.pct))
+rownames(team.season.mat) = team.season.mat[,"season"]
+team.season.mat = team.season.mat[ ,-which(colnames(team.season.mat)=="season")]
+
+teams.hc = hclust(dist(t(team.season.mat)), "ave")
+ggdendrogram(teams.hc, rotate = TRUE)
+```
+
+---
+
+## Simplifying the dendrogram
+
+```{r simpledendro0, results='asis', message=FALSE, eval=FALSE}
+teams.dendro = as.dendrogram(teams.hc)
+teams.ddata = dendro_data(teams.dendro)
+
+p2 = ggplot(segment(teams.ddata)) + 
+	geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
+	coord_flip() + 
+	theme_dendro() +
+	# tweak these if the dendrogram doesn't line up:
+	theme(plot.margin = unit(c(-7,0,-15,-20), "points"))
+p2
+```
+
+---
+
+```{r simpledendro1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+teams.dendro = as.dendrogram(teams.hc)
+teams.ddata = dendro_data(teams.dendro)
+
+p2 = ggplot(segment(teams.ddata)) + 
+	geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
+	coord_flip() + 
+	theme_dendro() +
+	# tweak these if the dendrogram doesn't line up:
+	theme(plot.margin = unit(c(-7,0,-15,-20), "points"))
+p2
+```
+
+---
+
+## Heatmap, reordered
+
+```{r heatmap0ro, results='asis', message=FALSE, eval=FALSE}
+# need to remove the extra factor levels
+# and rorder according to the clustering
+hist.perf.teams.2014$team.name = as.character(
+	hist.perf.teams.2014$team.name)
+# can do sort(unique(x)) here because they were originally 
+# in alphabetical order. just be sure the order of the 
+# dendrogram matches up with the new order of the heatmap.
+hist.perf.teams.2014$team.name = factor(
+	hist.perf.teams.2014$team.name,
+	sort(unique(hist.perf.teams.2014$team.name))[
+		order.dendrogram(teams.dendro)],
+	ordered=TRUE)
+p1 = ggplot(hist.perf.teams.2014,
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu")[3:9],
+		na.value="grey80", breaks=seq(0,1,0.25),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p1
+```
+
+---
+
+```{r heatmap1ro, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+# need to remove the extra factor levels
+# and rorder according to the clustering
+hist.perf.teams.2014$team.name = as.character(
+	hist.perf.teams.2014$team.name)
+# can do sort(unique(x)) here because they were originally 
+# in alphabetical order. just be sure the order of the 
+# dendrogram matches up with the new order of the heatmap.
+hist.perf.teams.2014$team.name = factor(
+	hist.perf.teams.2014$team.name,
+	sort(unique(hist.perf.teams.2014$team.name))[
+		order.dendrogram(teams.dendro)],
+	ordered=TRUE)
+p1 = ggplot(hist.perf.teams.2014,
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu")[3:9],
+		na.value="grey80", breaks=seq(0,1,0.25),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p1
+```
+
+---
+
+## Putting it all together
+
+```{r heatmapdendro0, results='asis', message=FALSE, eval=FALSE}
+library(gtable)
+g1 = gtable_add_cols(ggplotGrob(p1), unit(4,"cm"))
+# may need to adjust "t" and "b" if you don't add a ggtitle:
+g = gtable_add_grob(g1, ggplotGrob(p2),
+	t=3, l=ncol(g1), b=4, r=ncol(g1))
+grid.newpage()
+grid.draw(g)
+```
+
+---
+
+```{r heatmapdendro1, fig.cap=" ", fig.height=9, fig.width=10.5, dpi=300, fig.align='center', message=FALSE, echo=FALSE, cache=FALSE}
+library(gtable)
+g1 = gtable_add_cols(ggplotGrob(p1), unit(4,"cm"))
+# may need to adjust "t" and "b" if you don't add a ggtitle:
+g = gtable_add_grob(g1, ggplotGrob(p2),
+	t=3, l=ncol(g1), b=4, r=ncol(g1))
+grid.newpage()
+grid.draw(g)
 ```
 
 --- &twocol

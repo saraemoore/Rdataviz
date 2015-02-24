@@ -340,42 +340,6 @@ ggplot(data=ncaa.bball[[&quot;games&quot;]], aes(x=lscore, y=wscore)) +
 
 </section>
 <section class="slide " id="slide-18">
-  <h2>A heatmap with <code>geom_tile</code></h2>
-  <pre><code class="r">library(RColorBrewer) # brewer.pal
-library(grid)         # unit
-tourney.teams.2014 = as.character(
-    unique(subset(ncaa.bball[[&quot;team.season.summ&quot;]],
-        (season==2014)&amp;(max.tourney.round&gt;=&quot;Sweet Sixteen&quot;))$team.name))
-p = ggplot(subset(ncaa.bball[[&quot;team.season.summ&quot;]], 
-        team.name%in%tourney.teams.2014),
-        aes(x=season, y=team.name, fill=win.pct)) +
-    geom_tile() + 
-    scale_fill_gradientn(
-        &quot;Proportion of regular season games won&quot;,
-        colours = brewer.pal(9,&quot;GnBu&quot;)[3:9],
-        na.value=&quot;grey80&quot;, breaks=seq(0,1,0.25),
-        guide = guide_colorbar(barwidth = 15, barheight = 1)) +
-    scale_x_continuous(&quot;Season&quot;, expand = c(0, 0)) + 
-    scale_y_discrete(&quot;Team&quot;, expand = c(0, 0)) +
-    ggtitle(&quot;Historical regular season performance of\n2014 NCAA tournament &#39;Sweet 16&#39; teams&quot;) +
-    theme_classic(base_size=16) + 
-    theme(legend.position = &quot;bottom&quot;,
-        axis.text.y = element_text(size = 11),
-        plot.margin = unit(c(0,0.1,-0.4,0.1), &quot;cm&quot;))
-p
-</code></pre>
-
-</section>
-<section class="slide " id="slide-19">
-  
-  <p><img src="assets/fig/heatmap1-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
-
-</section>
-<section class="slide " id="slide-20">
-  <h2>Adding a dendrogram to the heatmap</h2>
-  
-</section>
-<section class="slide " id="slide-21">
   <h2>Dates, <code>tidyr</code>, and summaries with <code>ggplot2</code></h2>
   <pre><code class="r">library(tidyr) # gather
 duke.2014 = subset(ncaa.bball[[&quot;teams&quot;]], 
@@ -399,12 +363,142 @@ ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
 </code></pre>
 
 </section>
-<section class="slide " id="slide-22">
+<section class="slide " id="slide-19">
   
   <p><img src="assets/fig/datescaleduke1-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
 
 </section>
+<section class="slide " id="slide-20">
+  <h2>A heatmap with <code>ggplot2::geom_tile</code></h2>
+  <pre><code class="r">library(RColorBrewer) # brewer.pal
+library(grid)         # unit
+tourney.teams.2014 = as.character(
+    unique(subset(ncaa.bball[[&quot;team.season.summ&quot;]],
+        (season==2014)&amp;(max.tourney.round&gt;=&quot;Sweet Sixteen&quot;))$team.name))
+hist.perf.teams.2014 = subset(ncaa.bball[[&quot;team.season.summ&quot;]], 
+    team.name%in%tourney.teams.2014)
+p1 = ggplot(hist.perf.teams.2014,
+        aes(x=season, y=team.name, fill=win.pct)) +
+    geom_tile() + 
+    scale_fill_gradientn(
+        &quot;Proportion of regular season games won&quot;,
+        colours = brewer.pal(9,&quot;GnBu&quot;),
+        na.value=&quot;grey80&quot;, breaks=seq(0,1,0.25),
+        guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+    scale_x_continuous(&quot;Season&quot;, expand = c(0, 0)) + 
+    scale_y_discrete(&quot;Team&quot;, expand = c(0, 0)) +
+    ggtitle(&quot;Historical regular season performance of\n2014 NCAA tournament &#39;Sweet 16&#39; teams&quot;) +
+    theme_classic(base_size=16) + 
+    theme(legend.position = &quot;bottom&quot;,
+        axis.text.y = element_text(size = 11),
+        plot.margin = unit(c(0,0.1,-0.4,0.1), &quot;cm&quot;))
+p1
+</code></pre>
+
+</section>
+<section class="slide " id="slide-21">
+  
+  <p><img src="assets/fig/heatmap1-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
+
+</section>
+<section class="slide " id="slide-22">
+  <h2>Creating a dendrogram with <code>ggdendro</code></h2>
+  <pre><code class="r">library(ggdendro)
+
+team.season.df = subset(ncaa.bball[[&quot;team.season.summ&quot;]],
+    team.name%in%tourney.teams.2014)[,
+        c(&quot;season&quot;, &quot;team.name&quot;,&quot;win.pct&quot;)]
+# use tidyr, but this time go long --&gt; wide (spread)
+team.season.mat = as.matrix(team.season.df %&gt;% spread(team.name, win.pct))
+rownames(team.season.mat) = team.season.mat[,&quot;season&quot;]
+team.season.mat = team.season.mat[ ,-which(colnames(team.season.mat)==&quot;season&quot;)]
+
+teams.hc = hclust(dist(t(team.season.mat)), &quot;ave&quot;)
+ggdendrogram(teams.hc, rotate = TRUE)
+</code></pre>
+
+</section>
 <section class="slide " id="slide-23">
+  
+  <p><img src="assets/fig/dendro1-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
+
+</section>
+<section class="slide " id="slide-24">
+  <h2>Simplifying the dendrogram</h2>
+  <pre><code class="r">teams.dendro = as.dendrogram(teams.hc)
+teams.ddata = dendro_data(teams.dendro)
+
+p2 = ggplot(segment(teams.ddata)) + 
+    geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
+    coord_flip() + 
+    theme_dendro() +
+    # tweak these if the dendrogram doesn&#39;t line up:
+    theme(plot.margin = unit(c(-7,0,-15,-20), &quot;points&quot;))
+p2
+</code></pre>
+
+</section>
+<section class="slide " id="slide-25">
+  
+  <p><img src="assets/fig/simpledendro1-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
+
+</section>
+<section class="slide " id="slide-26">
+  <h2>Heatmap, reordered</h2>
+  <pre><code class="r"># need to remove the extra factor levels
+# and rorder according to the clustering
+hist.perf.teams.2014$team.name = as.character(
+    hist.perf.teams.2014$team.name)
+# can do sort(unique(x)) here because they were originally 
+# in alphabetical order. just be sure the order of the 
+# dendrogram matches up with the new order of the heatmap.
+hist.perf.teams.2014$team.name = factor(
+    hist.perf.teams.2014$team.name,
+    sort(unique(hist.perf.teams.2014$team.name))[
+        order.dendrogram(teams.dendro)],
+    ordered=TRUE)
+p1 = ggplot(hist.perf.teams.2014,
+        aes(x=season, y=team.name, fill=win.pct)) +
+    geom_tile() + 
+    scale_fill_gradientn(
+        &quot;Proportion of regular season games won&quot;,
+        colours = brewer.pal(9,&quot;GnBu&quot;)[3:9],
+        na.value=&quot;grey80&quot;, breaks=seq(0,1,0.25),
+        guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+    scale_x_continuous(&quot;Season&quot;, expand = c(0, 0)) + 
+    scale_y_discrete(&quot;Team&quot;, expand = c(0, 0)) +
+    ggtitle(&quot;Historical regular season performance of\n2014 NCAA tournament &#39;Sweet 16&#39; teams&quot;) +
+    theme_classic(base_size=16) + 
+    theme(legend.position = &quot;bottom&quot;,
+        axis.text.y = element_text(size = 11),
+        plot.margin = unit(c(0,0.1,-0.4,0.1), &quot;cm&quot;))
+p1
+</code></pre>
+
+</section>
+<section class="slide " id="slide-27">
+  
+  <p><img src="assets/fig/heatmap1ro-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
+
+</section>
+<section class="slide " id="slide-28">
+  <h2>Putting it all together</h2>
+  <pre><code class="r">library(gtable)
+g1 = gtable_add_cols(ggplotGrob(p1), unit(4,&quot;cm&quot;))
+# may need to adjust &quot;t&quot; and &quot;b&quot; if you don&#39;t add a ggtitle:
+g = gtable_add_grob(g1, ggplotGrob(p2),
+    t=3, l=ncol(g1), b=4, r=ncol(g1))
+grid.newpage()
+grid.draw(g)
+</code></pre>
+
+</section>
+<section class="slide " id="slide-29">
+  
+  <p><img src="assets/fig/heatmapdendro1-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
+
+</section>
+<section class="slide " id="slide-30">
   <h2>Packages that pair well with <code>ggplot2</code></h2>
   
 <div style='float:left;width:48%;' class='centered'>
@@ -435,7 +529,7 @@ ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
 
 </div>
 </section>
-<section class="slide " id="slide-24">
+<section class="slide " id="slide-31">
   <h2>Where to go for help with <code>ggplot2</code></h2>
   <ul>
 <li><a href="http://link.springer.com/book/10.1007%2F978-0-387-98141-3">Hadley Wickham&#39;s ggplot2 book (2009)</a></li>
@@ -446,11 +540,11 @@ ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
 </ul>
 
 </section>
-<section class="slide " id="slide-25">
+<section class="slide " id="slide-32">
   <h1>Interactive data visualizations in R</h1>
   
 </section>
-<section class="slide " id="slide-26">
+<section class="slide " id="slide-33">
   <h2>Why interactive?</h2>
   
 <div style='float:left;width:48%;' class='centered'>
@@ -466,7 +560,7 @@ ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
 
 </div>
 </section>
-<section class="slide " id="slide-27">
+<section class="slide " id="slide-34">
   <h2>SVG <code>ggplot</code> with <code>plotly</code></h2>
   <pre><code class="r"># start with a static ggplot
 p = ggplot(subset(ncaa.bball[[&quot;team.season.summ&quot;]], 
@@ -484,12 +578,12 @@ p
 </code></pre>
 
 </section>
-<section class="slide " id="slide-28">
+<section class="slide " id="slide-35">
   
   <p><img src="assets/fig/plotly1static-1.png" title=" " alt=" " style="display: block; margin: auto;" /></p>
 
 </section>
-<section class="slide " id="slide-29">
+<section class="slide " id="slide-36">
   <h2>SVG <code>ggplot</code> with <code>plotly</code></h2>
   <pre><code class="r"># library(devtools)
 # install_github(&quot;ropensci/plotly&quot;)
@@ -510,13 +604,13 @@ plot.info = py$ggplotly(p, session=&quot;knitr&quot;) # embed in knitr document
 </code></pre>
 
 </section>
-<section class="slide " id="slide-30">
+<section class="slide " id="slide-37">
   
   <iframe height="600" id="igraph" scrolling="no" seamless="seamless"
-                src="https://plot.ly/~saraemoore/59" width="600" frameBorder="0"></iframe>
+                src="https://plot.ly/~saraemoore/62" width="600" frameBorder="0"></iframe>
 
 </section>
-<section class="slide " id="slide-31">
+<section class="slide " id="slide-38">
   <h2>SVG graphic with <code>clickme</code></h2>
   <pre><code class="r"># library(devtools)
 # install_github(&quot;nachocab/clickme&quot;)
@@ -542,12 +636,12 @@ cmplot$iframe()$hide()
 </code></pre>
 
 </section>
-<section class="slide " id="slide-32">
+<section class="slide " id="slide-39">
   
   <iframe width="1000" height="760" src="clickme0.html" frameborder=0> </iframe>
 
 </section>
-<section class="slide " id="slide-33">
+<section class="slide " id="slide-40">
   <h2>MotionChart with <code>googleVis</code> (Flash)</h2>
   <pre><code class="r">library(googleVis)
 # data.frame with &gt;=4 cols: x, y, id, time. color and size optional,
@@ -566,18 +660,18 @@ print(mc, &#39;chart&#39;) # embed in knitr document
 </code></pre>
 
 </section>
-<section class="slide " id="slide-34">
+<section class="slide " id="slide-41">
   
   <!-- MotionChart generated in R 3.1.2 by googleVis 0.5.8 package -->
 
-<!-- Tue Feb 24 01:45:32 2015 -->
+<!-- Tue Feb 24 10:44:28 2015 -->
 
 <!-- jsHeader -->
 
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMotionChartID10e202dca3fe2 () {
+function gvisDataMotionChartID10e203ba3f945 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -16161,15 +16255,15 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMotionChartID10e202dca3fe2() {
-var data = gvisDataMotionChartID10e202dca3fe2();
+function drawChartMotionChartID10e203ba3f945() {
+var data = gvisDataMotionChartID10e203ba3f945();
 var options = {};
 options["width"] =    750;
 options["height"] =    650;
 options["state"] = "\n{\"xAxisOption\":\"2\",\"yAxisOption\":\"5\",\"colorOption\":\"3\",\"sizeOption\":\"4\",\"dimensions\":{\"iconDimensions\":[\"dim0\"]}}\n";
 
     var chart = new google.visualization.MotionChart(
-    document.getElementById('MotionChartID10e202dca3fe2')
+    document.getElementById('MotionChartID10e203ba3f945')
     );
     chart.draw(data,options);
     
@@ -16193,9 +16287,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMotionChartID10e202dca3fe2);
+callbacks.push(drawChartMotionChartID10e203ba3f945);
 })();
-function displayChartMotionChartID10e202dca3fe2() {
+function displayChartMotionChartID10e203ba3f945() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -16221,17 +16315,17 @@ callbacks.shift()();
 
 <!-- jsChart -->  
 
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID10e202dca3fe2"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID10e203ba3f945"></script>
  
 
 <!-- divChart -->
 
-<div id="MotionChartID10e202dca3fe2" 
+<div id="MotionChartID10e203ba3f945" 
   style="width: 750; height: 650;">
 </div>
 
 </section>
-<section class="slide " id="slide-35">
+<section class="slide " id="slide-42">
   <h2>Many interactive options in R</h2>
   
 <div style='float:left;width:48%;' class='centered'>
@@ -16256,11 +16350,11 @@ callbacks.shift()();
 
 </div>
 </section>
-<section class="slide " id="slide-36">
+<section class="slide " id="slide-43">
   <h1>Questions?</h1>
   
 </section>
-<section class="slide " id="slide-37">
+<section class="slide " id="slide-44">
   <h2>References</h2>
   <p>[1] L. Wilkinson. <em>The Grammar of Graphics</em>. Springer-Verlag New
 York, 2005. DOI: 10.1007/0-387-28695-0. <URL:
@@ -16279,7 +16373,7 @@ http://dx.doi.org/10.1198/jcgs.2009.07098>.</p>
 59.10 (2014). <URL: http://www.jstatsoft.org/v59/i10>.</p>
 
 </section>
-<section class="slide " id="slide-38">
+<section class="slide " id="slide-45">
   <h2>Credits</h2>
   <h4>Built using <a href="https://github.com/ramnathv/slidify">slidify</a> with</h4>
 

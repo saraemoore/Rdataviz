@@ -303,48 +303,6 @@ geom               | stat               | modifiable defaults
 
 ---
 
-## A heatmap with `geom_tile`
-
-
-```r
-library(RColorBrewer) # brewer.pal
-library(grid)         # unit
-tourney.teams.2014 = as.character(
-	unique(subset(ncaa.bball[["team.season.summ"]],
-		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
-p = ggplot(subset(ncaa.bball[["team.season.summ"]], 
-		team.name%in%tourney.teams.2014),
-		aes(x=season, y=team.name, fill=win.pct)) +
-	geom_tile() + 
-	scale_fill_gradientn(
-		"Proportion of regular season games won",
-		colours = brewer.pal(9,"GnBu")[3:9],
-		na.value="grey80", breaks=seq(0,1,0.25),
-		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
-	scale_x_continuous("Season", expand = c(0, 0)) + 
-	scale_y_discrete("Team", expand = c(0, 0)) +
-	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
-	theme_classic(base_size=16) + 
-	theme(legend.position = "bottom",
-		axis.text.y = element_text(size = 11),
-		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
-p
-```
-
----
-
-<img src="assets/fig/heatmap1-1.png" title=" " alt=" " style="display: block; margin: auto;" />
-
-*** =pnotes
-
-Note that there is a package called `gplots` with a function called `heatmap.2`: this is commonly used to make heatmaps with dendrograms but is not the same as `ggplot`.
-
----
-
-## Adding a dendrogram to the heatmap
-
----
-
 ## Dates, `tidyr`, and summaries with `ggplot2`
 
 
@@ -373,6 +331,150 @@ ggplot(duke.2014, aes(x=date, y=pct, color=shot.type)) +
 ---
 
 <img src="assets/fig/datescaleduke1-1.png" title=" " alt=" " style="display: block; margin: auto;" />
+
+---
+
+## A heatmap with `ggplot2::geom_tile`
+
+
+```r
+library(RColorBrewer) # brewer.pal
+library(grid)         # unit
+tourney.teams.2014 = as.character(
+	unique(subset(ncaa.bball[["team.season.summ"]],
+		(season==2014)&(max.tourney.round>="Sweet Sixteen"))$team.name))
+hist.perf.teams.2014 = subset(ncaa.bball[["team.season.summ"]], 
+	team.name%in%tourney.teams.2014)
+p1 = ggplot(hist.perf.teams.2014,
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu"),
+		na.value="grey80", breaks=seq(0,1,0.25),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p1
+```
+
+---
+
+<img src="assets/fig/heatmap1-1.png" title=" " alt=" " style="display: block; margin: auto;" />
+
+*** =pnotes
+
+Note that there is a package called `gplots` with a function called `heatmap.2`: this is commonly used to make heatmaps with dendrograms but is not the same as `ggplot`.
+
+---
+
+## Creating a dendrogram with `ggdendro`
+
+
+```r
+library(ggdendro)
+
+team.season.df = subset(ncaa.bball[["team.season.summ"]],
+	team.name%in%tourney.teams.2014)[,
+		c("season", "team.name","win.pct")]
+# use tidyr, but this time go long --> wide (spread)
+team.season.mat = as.matrix(team.season.df %>% spread(team.name, win.pct))
+rownames(team.season.mat) = team.season.mat[,"season"]
+team.season.mat = team.season.mat[ ,-which(colnames(team.season.mat)=="season")]
+
+teams.hc = hclust(dist(t(team.season.mat)), "ave")
+ggdendrogram(teams.hc, rotate = TRUE)
+```
+
+---
+
+<img src="assets/fig/dendro1-1.png" title=" " alt=" " style="display: block; margin: auto;" />
+
+---
+
+## Simplifying the dendrogram
+
+
+```r
+teams.dendro = as.dendrogram(teams.hc)
+teams.ddata = dendro_data(teams.dendro)
+
+p2 = ggplot(segment(teams.ddata)) + 
+	geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
+	coord_flip() + 
+	theme_dendro() +
+	# tweak these if the dendrogram doesn't line up:
+	theme(plot.margin = unit(c(-7,0,-15,-20), "points"))
+p2
+```
+
+---
+
+<img src="assets/fig/simpledendro1-1.png" title=" " alt=" " style="display: block; margin: auto;" />
+
+---
+
+## Heatmap, reordered
+
+
+```r
+# need to remove the extra factor levels
+# and rorder according to the clustering
+hist.perf.teams.2014$team.name = as.character(
+	hist.perf.teams.2014$team.name)
+# can do sort(unique(x)) here because they were originally 
+# in alphabetical order. just be sure the order of the 
+# dendrogram matches up with the new order of the heatmap.
+hist.perf.teams.2014$team.name = factor(
+	hist.perf.teams.2014$team.name,
+	sort(unique(hist.perf.teams.2014$team.name))[
+		order.dendrogram(teams.dendro)],
+	ordered=TRUE)
+p1 = ggplot(hist.perf.teams.2014,
+		aes(x=season, y=team.name, fill=win.pct)) +
+	geom_tile() + 
+	scale_fill_gradientn(
+		"Proportion of regular season games won",
+		colours = brewer.pal(9,"GnBu")[3:9],
+		na.value="grey80", breaks=seq(0,1,0.25),
+		guide = guide_colorbar(barwidth = 15, barheight = 1)) +
+	scale_x_continuous("Season", expand = c(0, 0)) + 
+	scale_y_discrete("Team", expand = c(0, 0)) +
+	ggtitle("Historical regular season performance of\n2014 NCAA tournament 'Sweet 16' teams") +
+	theme_classic(base_size=16) + 
+	theme(legend.position = "bottom",
+		axis.text.y = element_text(size = 11),
+		plot.margin = unit(c(0,0.1,-0.4,0.1), "cm"))
+p1
+```
+
+---
+
+<img src="assets/fig/heatmap1ro-1.png" title=" " alt=" " style="display: block; margin: auto;" />
+
+---
+
+## Putting it all together
+
+
+```r
+library(gtable)
+g1 = gtable_add_cols(ggplotGrob(p1), unit(4,"cm"))
+# may need to adjust "t" and "b" if you don't add a ggtitle:
+g = gtable_add_grob(g1, ggplotGrob(p2),
+	t=3, l=ncol(g1), b=4, r=ncol(g1))
+grid.newpage()
+grid.draw(g)
+```
+
+---
+
+<img src="assets/fig/heatmapdendro1-1.png" title=" " alt=" " style="display: block; margin: auto;" />
 
 --- &twocol
 
@@ -493,7 +595,7 @@ plot.info = py$ggplotly(p, session="knitr") # embed in knitr document
 ---
 
 <iframe height="600" id="igraph" scrolling="no" seamless="seamless"
-				src="https://plot.ly/~saraemoore/59" width="600" frameBorder="0"></iframe>
+				src="https://plot.ly/~saraemoore/62" width="600" frameBorder="0"></iframe>
 
 *** =pnotes
 
@@ -558,14 +660,14 @@ print(mc, 'chart') # embed in knitr document
 ---
 
 <!-- MotionChart generated in R 3.1.2 by googleVis 0.5.8 package -->
-<!-- Tue Feb 24 01:45:32 2015 -->
+<!-- Tue Feb 24 10:44:28 2015 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMotionChartID10e202dca3fe2 () {
+function gvisDataMotionChartID10e203ba3f945 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -16149,15 +16251,15 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMotionChartID10e202dca3fe2() {
-var data = gvisDataMotionChartID10e202dca3fe2();
+function drawChartMotionChartID10e203ba3f945() {
+var data = gvisDataMotionChartID10e203ba3f945();
 var options = {};
 options["width"] =    750;
 options["height"] =    650;
 options["state"] = "\n{\"xAxisOption\":\"2\",\"yAxisOption\":\"5\",\"colorOption\":\"3\",\"sizeOption\":\"4\",\"dimensions\":{\"iconDimensions\":[\"dim0\"]}}\n";
 
     var chart = new google.visualization.MotionChart(
-    document.getElementById('MotionChartID10e202dca3fe2')
+    document.getElementById('MotionChartID10e203ba3f945')
     );
     chart.draw(data,options);
     
@@ -16181,9 +16283,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMotionChartID10e202dca3fe2);
+callbacks.push(drawChartMotionChartID10e203ba3f945);
 })();
-function displayChartMotionChartID10e202dca3fe2() {
+function displayChartMotionChartID10e203ba3f945() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -16207,11 +16309,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID10e202dca3fe2"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID10e203ba3f945"></script>
  
 <!-- divChart -->
   
-<div id="MotionChartID10e202dca3fe2" 
+<div id="MotionChartID10e203ba3f945" 
   style="width: 750; height: 650;">
 </div>
 
