@@ -3,19 +3,17 @@ This repository contains a slide deck entitled "Advanced R Data Visualization," 
 + the [deck.js](https://github.com/imakewebthings/deck.js) framework,
 + the [RefManageR](http://cran.r-project.org/web/packages/RefManageR/index.html) bibliography manager, and
 + + the [prettify](https://code.google.com/p/google-code-prettify/) syntax highlighter.
-The file for the main deck is [index.html](https://saraemoore.github.io/Rdataviz/index.html), built from the [RMarkdown](http://rmarkdown.rstudio.com/) file index.Rmd. To recompile **in R**:
+The file for the main deck is [index.html](https://saraemoore.github.io/Rdataviz/index.html), built from the [RMarkdown](http://rmarkdown.rstudio.com/) file index.Rmd. To recompile **in R**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate):
 
-    # library(devtools)
-    # install_github("ramnathv/slidify")
-    # install_github("ramnathv/slidifyLibraries")
+    library(devtools)
+    install_github("ramnathv/slidify")
+    install_github("ramnathv/slidifyLibraries")
     library(slidify)
-    # cd into the local git repo's folder
-    # (change as appropriate)
     setwd("~/Downloads/Rdataviz")
     slidify("index.Rmd")
     browseURL("index.html")
 
-Rough presenter notes are in [pnotes.html](https://saraemoore.github.io/Rdataviz/pnotes.html), built (using [pandoc](http://johnmacfarlane.net/pandoc/)) from the markdown file [pnotes.md](https://github.com/saraemoore/Rdataviz/blob/gh-pages/pnotes.md). To recompile **at the command line**:
+Rough presenter notes are in [pnotes.html](https://saraemoore.github.io/Rdataviz/pnotes.html), built (using [pandoc](http://johnmacfarlane.net/pandoc/)) from the markdown file [pnotes.md](https://github.com/saraemoore/Rdataviz/blob/gh-pages/pnotes.md). To recompile **at the command line**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate)::
 
     cd ~/Downloads/Rdataviz
     pandoc pnotes.md -f markdown -t html -s -o pnotes.html
