@@ -4,7 +4,7 @@ This repository contains a slide deck entitled "Advanced R Data Visualization," 
 + the [RefManageR](http://cran.r-project.org/web/packages/RefManageR/index.html) bibliography manager, and
 + the [prettify](https://code.google.com/p/google-code-prettify/) syntax highlighter.
 
-The file for the main deck is [index.html](https://saraemoore.github.io/Rdataviz/index.html), built from the [RMarkdown](http://rmarkdown.rstudio.com/) file [index.Rmd]((https://github.com/saraemoore/Rdataviz/blob/gh-pages/index.Rmd). To recompile **in R**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate), execute the code below.
+The file for the main deck is [index.html](https://saraemoore.github.io/Rdataviz/index.html), built from the [RMarkdown](http://rmarkdown.rstudio.com/) file [index.Rmd](https://github.com/saraemoore/Rdataviz/blob/gh-pages/index.Rmd). To recompile **in R**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate), execute the code below.
 
 ```
 #library(devtools)
@@ -18,7 +18,7 @@ browseURL("index.html")
 
 **Note**: To compile as-is, all CSVs from the Kaggle [March Machine Learning "Mania" 2015](http://www.kaggle.com/c/march-machine-learning-mania-2015) competition should be downloaded into `~/Dropbox/kaggle/marchmania2015/`.  Additionally, the following R packages should be installed:
 + [RefManageR](http://cran.r-project.org/web/packages/RefManageR/index.html)
-+ ggplot2
++ [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html)
 + [munsell](http://cran.r-project.org/web/packages/munsell/index.html)
 + [tidyr](http://cran.r-project.org/web/packages/tidyr/index.html)
 + [scales](http://cran.r-project.org/web/packages/scales/index.html)
@@ -29,7 +29,7 @@ browseURL("index.html")
 + plotly
 
 
-[dplyr](http://cran.r-project.org/web/packages/dplyr/index.html) and 
+Additionally, [dplyr](http://cran.r-project.org/web/packages/dplyr/index.html) and [lubridate](http://cran.r-project.org/web/packages/lubridate/index.html) will be installed automatically by [load_marchmania2015.R](https://github.com/saraemoore/Rdataviz/blob/gh-pages/assets/load_marchmania2015.R).
 
 
 Rough presenter notes are in [pnotes.html](https://saraemoore.github.io/Rdataviz/pnotes.html), built (using [pandoc](http://johnmacfarlane.net/pandoc/)) from the markdown file [pnotes.md](https://github.com/saraemoore/Rdataviz/blob/gh-pages/pnotes.md). To recompile **at the command line**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate):
