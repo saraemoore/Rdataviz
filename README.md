@@ -27,6 +27,8 @@ browseURL("index.html")
 + [ggdendro](http://cran.r-project.org/web/packages/ggdendro/index.html)
 + [gtable](http://cran.r-project.org/web/packages/gtable/index.html)
 + plotly
++ clickme
++ googleVis
 
 
 Additionally, [dplyr](http://cran.r-project.org/web/packages/dplyr/index.html) and [lubridate](http://cran.r-project.org/web/packages/lubridate/index.html) will be installed automatically by [load_marchmania2015.R](https://github.com/saraemoore/Rdataviz/blob/gh-pages/assets/load_marchmania2015.R).
