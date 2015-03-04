@@ -21,3 +21,5 @@ Rough presenter notes are in [pnotes.html](https://saraemoore.github.io/Rdataviz
 cd ~/Downloads/Rdataviz
 pandoc pnotes.md -f markdown -t html -s -o pnotes.html
 ```
+
+**Note**: the `googleVis` graphic on slide 41 requires Flash. Your browser may require additional configuration to display this graphic when working from a local repository.
