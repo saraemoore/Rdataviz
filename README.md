@@ -4,7 +4,7 @@ This repository contains a slide deck entitled "Advanced R Data Visualization," 
 + the [RefManageR](http://cran.r-project.org/web/packages/RefManageR/index.html) bibliography manager, and
 + the [prettify](https://code.google.com/p/google-code-prettify/) syntax highlighter.
 
-The file for the main deck is [index.html](https://saraemoore.github.io/Rdataviz/index.html), built from the [RMarkdown](http://rmarkdown.rstudio.com/) file index.Rmd. To recompile **in R**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate):
+The file for the main deck is [index.html](https://saraemoore.github.io/Rdataviz/index.html), built from the [RMarkdown](http://rmarkdown.rstudio.com/) file [index.Rmd]((https://github.com/saraemoore/Rdataviz/blob/gh-pages/index.Rmd). To recompile **in R**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate), execute the code below. To compile as-is, the [RefManageR](http://cran.r-project.org/web/packages/RefManageR/index.html) R package should be installed, and all CSVs from the Kaggle [March Machine Learning "Mania" 2015](http://www.kaggle.com/c/march-machine-learning-mania-2015) competition should be downloaded into `~/Dropbox/kaggle/marchmania2015/`.
 
 ```
 #library(devtools)
