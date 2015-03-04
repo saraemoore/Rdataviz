@@ -15,7 +15,7 @@ slidify("index.Rmd")
 browseURL("index.html")
 ```
 
-Rough presenter notes are in [pnotes.html](https://saraemoore.github.io/Rdataviz/pnotes.html), built (using [pandoc](http://johnmacfarlane.net/pandoc/)) from the markdown file [pnotes.md](https://github.com/saraemoore/Rdataviz/blob/gh-pages/pnotes.md). To recompile **at the command line**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate)::
+Rough presenter notes are in [pnotes.html](https://saraemoore.github.io/Rdataviz/pnotes.html), built (using [pandoc](http://johnmacfarlane.net/pandoc/)) from the markdown file [pnotes.md](https://github.com/saraemoore/Rdataviz/blob/gh-pages/pnotes.md). To recompile **at the command line**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate):
 
 ```
 cd ~/Downloads/Rdataviz
