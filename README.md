@@ -3,6 +3,7 @@ This repository contains a slide deck entitled "Advanced R Data Visualization," 
 + the [deck.js](https://github.com/imakewebthings/deck.js) framework,
 + the [RefManageR](http://cran.r-project.org/web/packages/RefManageR/index.html) bibliography manager, and
 + the [prettify](https://code.google.com/p/google-code-prettify/) syntax highlighter.
+
 The file for the main deck is [index.html](https://saraemoore.github.io/Rdataviz/index.html), built from the [RMarkdown](http://rmarkdown.rstudio.com/) file index.Rmd. To recompile **in R**, where `~/Downloads/Rdataviz` is the the local git repo's folder (change as appropriate):
 
 ```
